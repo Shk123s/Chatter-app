@@ -61,13 +61,13 @@ exports.login = async (req, res) => {
     if (!findOne)
       return res.status(200).send({ message: "user does not exist" });
    
-    if (findOne.password === password) {
+      if (findOne.password === password) {
 
-      const token = jwt.sign( { user_id: findOne._id,},"shhhhh");
-       res.cookie("token", token, {
-        httpOnly: true,
-        maxAge: 3600000,
-      });
+        const token = jwt.sign({ user_id: findOne._id }, "shhhhh");
+        res.cookie("token", token, {
+          httpOnly: true,
+          maxAge: 3600000,
+        });
       
       return res.status(200).send({ message: "Login successfull", token, userDetails:findOne});
     }
@@ -82,9 +82,12 @@ exports.login = async (req, res) => {
 
 exports.logOut = (req, res, next) => {
   try {
-    if (!req.params.id) return res.json({ msg: "User id is required " });
-    onlineUsers.delete(req.params.id);
-    return res.status(200).send();
+    // res.clearCookie("token");
+    res.cookie('token', '', { 
+      maxAge: 0,
+      httpOnly: true, 
+  });
+  return res.status(200).send({ message: 'Logged out successfully.' });
   } catch (ex) {
     next(ex);
   }

@@ -7,7 +7,7 @@ const ChatInput = ({ messageAll, setMessageAll}) => {
   const userId=123, otherUserId = 321; 
   const socket = useMemo(
     () =>
-      io("http://localhost:5000", {
+      io("http://localhost:8000", {
         withCredentials: true,
       }),
     []

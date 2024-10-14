@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const router = require("./routes/app.routes");
 const secretKeyJWT = "asdasdsadasdasdasdsa";
-const port = 5000;
+const port = 8000;
 
 mongoose
   .connect("mongodb+srv://task:task@task.ie4pjtl.mongodb.net/Chatter", {
@@ -22,6 +22,7 @@ mongoose
   });
 
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
 const server = createServer(app);
 const io = new Server(server, {

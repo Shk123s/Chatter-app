@@ -1,4 +1,5 @@
-const { default: axios } = require("axios");
+
+const chatModel = require("../model/chat.model");
 
 exports.addChat = async (req, res) => {
   try {
@@ -66,3 +67,74 @@ exports.createChat = async (req, res) => {
   }
 };
 
+exports.getSingleChat = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const singleChat = await chatModel.find({ _id: id });
+    res.status(200).send({ data: singleChat });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Internal in getsinglechat server error" });
+  }
+};
+
+exports.getAllChats = async (req,res) =>{
+  try { 
+    const pipeline = [
+
+      {
+        $lookup: {
+          from: "users",
+          let: { id: "$creator" },
+          pipeline: [
+            {
+              $match: {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ["$_id", "$$id"]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $eq: ["$isActive", true]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          as: "user"
+        }
+      },
+      {
+        $addFields: {
+          user: { $arrayElemAt: ["$user", 0] }
+        }
+      },
+      {
+        $addFields: {
+          userId: "$user._id",
+          username: "$user.username"
+        }
+      },
+      {
+        $project: {
+          user: 0,
+          createdAt: 0,
+          updatedAt: 0,
+          isActive: 0,
+          __v: 0
+        }
+      }
+       
+    ];
+    const getChats = await chatModel.aggregate(pipeline);
+
+    return res.status(200).send({message:"chat fetch",data:getChats});
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Internal in getAllChats server error" });
+  }
+}
