@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
 
 const Login = () => {
@@ -36,6 +36,8 @@ const Login = () => {
       const response = await axios.post('http://localhost:8000/api/login', {
         username: userName,
         password: password,
+      },{
+        withCredentials: true,
       });
 
       if (response.status === 200) {
@@ -78,10 +80,14 @@ const Login = () => {
               style={{ width: '100%', padding: '8px', margin: '5px 0', border: '1px solid #ccc', borderRadius: '4px' }}
             />
           </div>
-          <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}>
+          <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#56c0da', color: 'white', border: 'none', borderRadius: '4px' }}>
             Login
           </button>
         </form>
+
+        <p style={{ textAlign: 'center', marginTop: '15px' }}>
+          Don't have an account? <Link to="/signup" style={{ color: '#007bff' }}>Sign up here</Link>
+        </p>
       </div>
     </div>
   );

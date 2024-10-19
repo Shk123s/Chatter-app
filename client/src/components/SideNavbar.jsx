@@ -10,8 +10,9 @@ export default function SideNavbar() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/api/logout");
- 
+      const response = await axios.post("http://localhost:8000/api/logout",{},
+      {withCredentials:true});
+  
       if (response.status === 200) {
         localStorage.removeItem('token');
         navigate('/'); 

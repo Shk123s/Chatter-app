@@ -10,7 +10,7 @@ const secretKeyJWT = "asdasdsadasdasdasdsa";
 const port = 8000;
 
 mongoose
-  .connect("mongodb+srv://task:task@task.ie4pjtl.mongodb.net/Chatter", {
+  .connect("mongodb+srv://shaqeebsk1234:3hHFxs8LAq9Drnas@cluster0.au4cd8l.mongodb.net/Chatter", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
