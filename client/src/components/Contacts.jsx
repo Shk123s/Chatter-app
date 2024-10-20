@@ -11,8 +11,10 @@ const Contacts = ({userView , setUserView}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const getData = await axios.get("http://localhost:8000/api/getUser");
-  
+        const getData = await axios.get("http://localhost:8000/api/getUser",  {
+          withCredentials: true,
+        });
+        
         setData(getData.data.message);
       } catch (error) {
         console.log(error)

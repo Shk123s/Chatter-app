@@ -43,8 +43,9 @@ exports.addUser = async (req, res) => {
 };
 exports.getUser = async (req, res) => {
   try {
-    const fetchAll = await UserModel.find({});
+    const fetchAll = await UserModel.find({}).find({_id:{$ne:req.user._id}});
 
+     console.log(req.user,"user")
     if (!fetchAll)
       return res
         .status(400)
