@@ -1,11 +1,13 @@
 import Login from "../src/components/auth/Login"
 import Signup from "./components/auth/signup";
+import  { MyContextProvider } from "./components/context/MyContext";
 import ChatPage from "./pages/ChatPage";
 
 import { Route, Routes } from "react-router-dom";
 const App = () => {
     
   return ( 
+    <MyContextProvider>
     <div className="App" style={{backgroundColor: '#d9eeef'}}> 
     <Routes>
      {/* <Route path="/"/> */}
@@ -15,6 +17,7 @@ const App = () => {
      </Routes>
       {/* <ChatPage /> */}
     </div>
+    </MyContextProvider>
   );
 };
 export default App; 

@@ -3,7 +3,6 @@ import "./messages.css";
 
 export const Messages = ({ messageAll }) => {
   const scrollRef = useRef();
-  console.log(messageAll,"messsageees")
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);

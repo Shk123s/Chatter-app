@@ -87,6 +87,10 @@ exports.login = async (req, res) => {
           httpOnly: true,
           maxAge: 3600000,
         });
+        res.cookie("userDetails", findOne, {
+          httpOnly: true,
+          maxAge: 3600000,
+        });
       
       return res.status(200).send({ message: "Login successfull", token, userDetails:findOne});
     }
@@ -101,8 +105,12 @@ exports.login = async (req, res) => {
 
 exports.logOut = (req, res, next) => {
   try {
-    console.log(req.cookies);
+
     res.cookie('token', '', { 
+      maxAge: 0,
+      httpOnly: true, 
+  });
+    res.cookie('userDetails', '', { 
       maxAge: 0,
       httpOnly: true, 
   });

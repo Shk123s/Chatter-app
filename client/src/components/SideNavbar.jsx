@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BiLogOut } from "react-icons/bi";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './sideNavbar.css';
+import MyContext from "./context/MyContext";
 
 export default function SideNavbar() {
   const navigate = useNavigate();
-
+  const { user} = useContext(MyContext);
+   console.log(user,"user side navbarkaaaaaaaaaaa")
   const handleLogout = async () => {
     try {
       const response = await axios.post("http://localhost:8000/api/logout",{},
