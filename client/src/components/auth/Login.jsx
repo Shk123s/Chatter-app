@@ -42,10 +42,10 @@ const Login = () => {
       });
 
       if (response.status === 200) {
-        Cookies.set('token', response.data.token, { expires: 1, secure: false });
-        // Cookies.set('userDetails', JSON.stringify(response.data.userDetails));
-        // console.log(response.data.userDetails);
-        Cookies.set('userDetails', response.data.userDetails, { expires: 1, secure: false });
+        // Cookies.set('token', response.data.token, { expires: 1, secure: false });
+        // // Cookies.set('userDetails', JSON.stringify(response.data.userDetails));
+        // // console.log(response.data.userDetails);
+        // Cookies.set('userDetails', response.data.userDetails, { expires: 1, secure: false });
 
 
       

@@ -81,16 +81,21 @@ exports.login = async (req, res) => {
       return res.status(200).send({ message: "user does not exist" });
    
       if (findOne.password === password) {
-
+    
         const token = jwt.sign({ user_id: findOne._id }, "shhhhh");
-        res.cookie("token", token, {
-          httpOnly: true,
-          maxAge: 3600000,
-        });
-        res.cookie("userDetails", findOne, {
-          httpOnly: true,
-          maxAge: 3600000,
-        });
+
+
+
+  res.cookie('userDetails', JSON.stringify(findOne), {  httpOnly: false });
+  res.cookie('token', token,{  httpOnly: false });
+        // res.cookie("token", token, {
+        //   httpOnly: true,
+        //   maxAge: 3600000,
+        // });
+        // res.cookie("userDetails", findOne, {
+        //   httpOnly: true,
+        //   maxAge: 3600000,
+        // });
       
       return res.status(200).send({ message: "Login successfull", token, userDetails:findOne});
     }

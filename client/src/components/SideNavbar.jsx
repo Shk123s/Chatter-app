@@ -9,7 +9,6 @@ import MyContext from "./context/MyContext";
 export default function SideNavbar() {
   const navigate = useNavigate();
   const { user} = useContext(MyContext);
-   console.log(user,"user side navbarkaaaaaaaaaaa")
   const handleLogout = async () => {
     try {
       const response = await axios.post("http://localhost:8000/api/logout",{},
@@ -34,7 +33,7 @@ export default function SideNavbar() {
       <div className="avatar">
         <IoSettingsOutline size={'30px'} />
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOuxrvcNMfGLh73uKP1QqYpKoCB0JLXiBMvA&s"
+          src={user?.avatar}
           alt="avatar"
         />
       </div>

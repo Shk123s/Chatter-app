@@ -9,23 +9,16 @@ const MyContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = Cookies.get('token'); // Get the token from cookies
+    const token = Cookies.get('token'); 
+
     if (token) {
       try {
-        // Decode the token to get user details (if needed)
-        const decodedToken = jwt_decode(token);
-
         const userDetailsFromCookie = Cookies.get('userDetails');
         const userDetails = userDetailsFromCookie ? JSON.parse(userDetailsFromCookie) : null;
-
-    
-        console.log(userDetailsFromCookie,"userrrrrrrr")
-        if (userDetailsFromCookie) {
-          setUser(userDetailsFromCookie);
-        } else {
         
-          setUser({ user_id: userDetails._id });
-        }
+        if (userDetailsFromCookie) {
+          setUser(userDetails);
+        } 
       } catch (error) {
         console.error("Invalid token:", error);
       }
@@ -33,6 +26,7 @@ const MyContextProvider = ({ children }) => {
   }, []);
 
   return (
+    
     <MyContext.Provider value={{ user }}>
       {children}
     </MyContext.Provider>
