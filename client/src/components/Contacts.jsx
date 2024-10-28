@@ -3,6 +3,7 @@ import "./contacts.css";
 import axios from "axios";
 import UserCard from "./UserCard";
 import { Link } from "react-router-dom";
+import { HashLoader } from "react-spinners";
 const Contacts = ({userView , setUserView}) => {
 
   
@@ -30,7 +31,7 @@ const Contacts = ({userView , setUserView}) => {
     setUserView(user);
   }
   
-  if (loading) return <div className="contacts-container">Loading...</div>; 
+  if (loading) return <div className="contacts-container"><HashLoader color="#0094ff" size={40} /></div>; 
   return (
     <div className="contacts-container">
       <div className="contact-heading">
