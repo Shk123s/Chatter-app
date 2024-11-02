@@ -1,5 +1,5 @@
 const UserModel = require("../model/user.model");
-const  jwt = require('jsonwebtoken')
+const  jwt = require('jsonwebtoken');
 
 
 const giveAvatar = () => {
@@ -43,17 +43,20 @@ exports.addUser = async (req, res) => {
 };
 exports.getUser = async (req, res) => {
   try {
-    const fetchAll = await UserModel.find({}).find({_id:{$ne:req.user._id}});
+  
+    const searchTerm = req.query.user;
+    const fetchAll = await UserModel.find({
+      _id: { $ne: req.user._id },
+      $or: [
+        { username: { $regex: searchTerm, $options: 'i' } }
+      ]
+    });
 
-     console.log(req.user,"user")
-    if (!fetchAll)
-      return res
-        .status(400)
-        .send({ message: "Error occured while fetching user " });
-
+    if (!fetchAll || fetchAll.length === 0) {
+      return res.status(404).send({ message: "No user found" });
+    }
     res.status(200).send({ message: fetchAll });
   } catch (error) {
-    console.log(error);
     res.status(500).send({ message: "Internal server error" });
   }
 };

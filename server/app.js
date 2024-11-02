@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require("express");
 const { Server } = require("socket.io");
 const { createServer } = require("http");
@@ -6,14 +7,12 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const router = require("./routes/app.routes");
-const secretKeyJWT = "asdasdsadasdasdasdsa";
-const port = 8000;
+const bodyParser = require('body-parser');
+const secretKeyJWT = process.env.secretKeyJWT
+const port = process.env.port;
 
 mongoose
-  .connect("mongodb+srv://shaqeebsk1234:3hHFxs8LAq9Drnas@cluster0.au4cd8l.mongodb.net/Chatter", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.DB_URL)
   .then(() => {
     console.log("DB Connection Successful");
   })
@@ -22,6 +21,7 @@ mongoose
   });
 
 const app = express();
+app.use(bodyParser.json()); 
 app.use(cookieParser());
 app.use(express.json());
 const server = createServer(app);

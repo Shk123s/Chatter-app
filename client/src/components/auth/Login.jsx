@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
-import Cookies from 'js-cookie';
 
 const Login = () => {
   const userNameRef = useRef();

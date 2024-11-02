@@ -2,58 +2,71 @@ import React, { useState, useEffect } from "react";
 import "./contacts.css";
 import axios from "axios";
 import UserCard from "./UserCard";
-import { Link } from "react-router-dom";
+import Modal from "./modal/SearchUserModal";
 import { HashLoader } from "react-spinners";
-const Contacts = ({userView , setUserView}) => {
+import { TiGroupOutline } from "react-icons/ti";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import GroupModal from "./modal/GroupModal";
 
-  
+const Contacts = ({ userView, setUserView }) => {
+  const [showModal, setModal] = useState(false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showModalGroup, setModalGroup] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const getData = await axios.get("http://localhost:8000/api/getUser",  {
+        const getData = await axios.get("http://localhost:8000/api/getConversation", {
           withCredentials: true,
         });
-        
         setData(getData.data.message);
       } catch (error) {
-        console.log(error)
+        console.log(error);
         setLoading(true);
       }
     };
     fetchData();
-    return () => {};
-  }, []);
+  }, [data]);
 
+  if (loading)
+    return (
+      <div className="contacts-container">
+        <HashLoader className="loader" color="#0000" size={40} />
+      </div>
+    );
 
-  const handleClick = (user) => {
-    setUserView(user);
-  }
-  
-  if (loading) return <div className="contacts-container"><HashLoader color="#0094ff" size={40} /></div>; 
   return (
     <div className="contacts-container">
       <div className="contact-heading">
         <h1>Chats</h1>
+        <AiOutlineUsergroupAdd size={"30px"} style={{cursor:"pointer"}} onClick={() => setModal(true)} />
+        <span className="createChat">Create Chat</span>
+     <div className="groupIconDiv">
+     <div className="create-group-btn"  style={{cursor:"pointer"}} onClick={() => setModalGroup(true)}>
+          <TiGroupOutline size={"30px"} />
+        </div>
+          <span>Create Group</span>
+     </div>
         <input type="text" placeholder="search" />
       </div>
-      {data.map((contact) => {
 
-        return (
-          <div onClick = {() => handleClick(contact)} key={contact._id}>
-          
+      {showModal && <Modal closeModal={() => setModal(false)} />}
+      {showModalGroup && <GroupModal closeModal={() => setModalGroup(false)} />}
+
+      {data.length === 0 ? (
+        <h3 style={{ marginTop: "20rem", textAlign: "center" }}>Create the chat!</h3>
+      ) : (
+        data.map((contact) => (
+          <div onClick={() => handleClick(contact)} key={contact._id}>
             <UserCard
-              
-              username={contact.username}
-              avatar={contact.avatar}
-              // time={contact.bio}
-              message={contact.createdAt}
+              username={contact?.messageUser?.username || contact?.name}
+              avatar={contact?.messageUser?.avatar}
+              message={contact?.messageUser?.createdAt || contact?.createdAt}
             />
-            
           </div>
-        );
-      })}
+        ))
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BiLogOut } from "react-icons/bi";
 import axios from 'axios';
@@ -6,40 +6,49 @@ import { useNavigate } from 'react-router-dom';
 import './sideNavbar.css';
 import MyContext from "./context/MyContext";
 import { HashLoader } from 'react-spinners';
-
+import Cookies from "js-cookie";
 export default function SideNavbar() {
+  const [showModal,setModal] = useState(false)
   const [load, setLoader] = useState(false);
+  const [userAvatar, setUserAvatar] = useState(null);
   const navigate = useNavigate();
   const { user } = useContext(MyContext);
 
+  useEffect(() => {
+    setUserAvatar(user?.avatar);
+  }, [user]);
+
   const handleLogout = async () => {
-    setLoader(true); // Set loader to true when logout starts
+    setLoader(true); 
     try {
       const response = await axios.post("http://localhost:8000/api/logout", {}, { withCredentials: true });
-
       if (response.status === 200) {
+        Cookies.remove('token');
+        Cookies.remove('userDetails');
         localStorage.removeItem('token');
-        navigate('/'); 
+        localStorage.removeItem('userDetails');
+        navigate('/');
       }
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      setLoader(false); // Reset loader after logout attempt finishes
+      setLoader(false);
     }
   };
 
   return (
     <div className="container">
       <div onClick={handleLogout} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-        {load ? (
-          <div className="loader"><HashLoader color="#0094ff" size={40} /></div> 
-        ) : (
-          <BiLogOut size={'40px'} />
-        )}
+        <BiLogOut size={'40px'} />
       </div>
+      {/* {showModal && <Modal closeModal={() => setModal(false)} />} */}
       <div className="avatar">
         <IoSettingsOutline size={'30px'} />
-        <img src={user?.avatar} alt="avatar" />
+        {load ? (
+          <div className="loader"><HashLoader color="#000000" size={40} /></div>
+        ) : (
+          <img src={userAvatar} alt="avatar" />
+        )}
       </div>
     </div>
   );

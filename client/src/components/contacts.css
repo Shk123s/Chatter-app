@@ -5,7 +5,7 @@
   width: 360px;
   overflow-y: auto;
   height: 100vh;
-  background-color: #FEF9D9;
+  background-color: #edf3f8;
   position: sticky;
   top: 0;
 }
@@ -14,7 +14,7 @@
   margin-top: 1rem;
   display: flex;
   flex-direction: row;
-  background-color: #D2E0FB;
+  background-color: #9fb1d5;
   align-items: center;
   padding: 5px 10px;
   gap: 15px;
@@ -59,6 +59,8 @@
   background-color: #DEE5D4;
   width: 100%;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
   box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px;
 }
 
@@ -69,4 +71,27 @@
   font-size: 14px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+} 
+
+.contacts-container .loader {
+  align-items: center;
+  margin: 20rem;
+}
+
+.create-group-btn{
+  float: left;
+  margin-left: 2px;
+}
+
+.contact-heading .groupIconDiv span {
+  margin: 4px; 
+}
+.groupIconDiv button{
+  background-color: none !important;
+}
+.contact-heading .createChat {
+  align-items: center;
+  margin-left: 35px;
+  top: 60px;
+  position: absolute;
 }
