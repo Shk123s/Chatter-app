@@ -91,21 +91,7 @@ exports.accessChat = async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 };
-const giveAvatar = () => {
-  const avatars = [
-    "https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSA9KoGRKSp6E7yyK4YhDkr1zf9VRANuK5ogJT-GDa8ELZEUQwJJ2wIBEM&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSg12fmWhH0dFfmJCyc3tXtu_TxDGFDKWqQePikPIzapJO4XrhA0o14qe4&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4Q8_PQJOWolfPT1d8KKlb36K1l5IPCQZYrMpJCJvyjCdP-Wjhpouw5Cc&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5r2IRcBIyCEvijeKfYbmKIN67Espeyx8qMK7DfvjFBhgriI2B2f952LIi3A&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQA-20fQNZmEtBJ3IGDynYiZ7uUj5cHiXnJ95GinIXlhxjP479zEOVW40k&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfOZr4M1BciX-PLXnAWTjwzqKd4UfKLDr3rw&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYHwAOQLyySbuK-Ptq2pJUPBaO2ja7dF-L_A&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2iWPO8hVH-A2tlSSq4Z1sTSdfHt8zN_VIMJF-htXSYyd-pcnkVw3WDcKr2W9YGTcQgDs&usqp=CAU"
-  ];
-  const randomIndex = Math.floor(Math.random() * avatars.length);
-  return avatars[randomIndex];
-}
+
 exports.createGroup = async (req, res) => {
   try {
     const { name, members } = req.body;
@@ -190,74 +176,118 @@ exports.createGroup = async (req, res) => {
   }
 };
 exports.getAllConversation = async(req,res) =>  
-{
+{  
+  const defaultGroupAvatar = "https://cdn.iconscout.com/icon/free/png-512/free-group-icon-download-in-svg-png-gif-file-formats--team-communication-compney-employee-font-awesome-pack-user-interface-icons-46244.png?f=webp&w=256"
   try {
-    const userId = req.user._id;
-  
-    const findConversation = await chatModel.aggregate([
-      {
-        $match: {
-          $or: [
-            {
-              members:userId
+    const userId = req.user._id.toString();
+    
+    const findConversation = await chatModel.aggregate(
+      [
+        {
+          $match: {
+            $or: [
+              {
+                members: { $in: [userId] }
+              },
+              {
+                creator: req.user._id
+              }
+            ],
+            isDeleted: false,
+            isActive: true
+          }
+        },
+        {
+          $addFields: {
+            firstMember: { $arrayElemAt: ["$members", 0] }
+          }
+        },
+        {
+          $addFields: {
+            firstMemberId: { $toObjectId: "$firstMember" }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            let: { memberId: "$firstMemberId" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$_id", "$$memberId"] }
+                }
+              },
+              {
+                $project: {
+                  username: 1,
+                  avatar: 1,
+                  createdAt: 1
+                }
+              }
+            ],
+            as: "messageUser"
+          }
+        },
+        {
+          $addFields: {
+            messageUser: { $arrayElemAt: ["$messageUser", 0] }
+          }
+        },
+        {
+          $addFields: {
+            messageUser: {
+              $cond: {
+                if: { $eq: ["$groupChat", true] },
+                then: "$$REMOVE",
+                else: "$messageUser"
+              }
             },
-            {
-              creator:userId
+            groupAvatar: {
+              $cond: {
+                if: { $eq: ["$groupChat", true] },
+                then: "https://cdn.iconscout.com/icon/free/png-512/free-group-icon-download-in-svg-png-gif-file-formats--team-communication-compney-employee-font-awesome-pack-user-interface-icons-46244.png?f=webp&w=256",
+                else: "$$REMOVE"
+              }
             }
-          ],
-          isDeleted: false,
-          isActive: true
-        }
-      },
-      {
-        $addFields: {
-          firstMember: {
-            $arrayElemAt: ["$members", 0]
+          }
+        },
+        { 
+          $lookup: {
+            from: "users",
+            let: { memberIds: "$members" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $in: ["$_id", { $map: { input: "$$memberIds", as: "memberId", in: { $toObjectId: "$$memberId" } } }] }
+                }
+              },
+              {
+                $project: {
+                  _id: 1,
+                  username: 1,
+                  avatar: 1
+                }
+              }
+            ],
+            as: "memberDetails"
+          }
+        },
+        {
+          $project: {
+            groupChat: 1,
+            name: 1,
+            members: 1,
+            memberDetails:1,
+            messageUser: 1,
+            groupAvatar: 1,
+            memberDetails: 1
           }
         }
-      },
-      {
-        $addFields: {
-          firstMemberId: {
-            $toObjectId: "$firstMember"
-          }
-        }
-      },
-      {
-        $lookup: {
-          from: "users",
-          let: { memberId: "$firstMemberId" },
-          pipeline: [
-            { $match: { $expr: { $eq: ["$_id", "$$memberId"] } } },
-            { $project: { username: 1,avatar:1,createdAt:1 } }
-          ],
-          as: "messageUser"
-        }
-      },
-      {
-        $addFields: {
-          messageUser: {
-            $arrayElemAt: ["$messageUser", 0]
-          }
-        }
-      },
-      {
-        $project: {
-          groupChat: 1,
-          name: 1,
-          createdAt:1,
-          messageUser: {
-            $cond:{
-              if:{$eq:["$groupChat",true]},
-              then:"$$REMOVE",
-              else:"$messageUser"
-            }
-          },
-          
-        }
-      }
-    ]);
-
+      ]
+      
+    );
+    
+   
     res.status(200).send({ message: findConversation });
     
   } catch (error) {

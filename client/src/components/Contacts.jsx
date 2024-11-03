@@ -27,8 +27,12 @@ const Contacts = ({ userView, setUserView }) => {
       }
     };
     fetchData();
-  }, [data]);
-
+  }, [data]);  
+  
+  const  handleClick = (contact)=>{ 
+    // for chat header 
+   setUserView(contact)
+  } 
   if (loading)
     return (
       <div className="contacts-container">
@@ -61,7 +65,7 @@ const Contacts = ({ userView, setUserView }) => {
           <div onClick={() => handleClick(contact)} key={contact._id}>
             <UserCard
               username={contact?.messageUser?.username || contact?.name}
-              avatar={contact?.messageUser?.avatar}
+              avatar={contact?.messageUser?.avatar || contact?.groupAvatar}
               message={contact?.messageUser?.createdAt || contact?.createdAt}
             />
           </div>

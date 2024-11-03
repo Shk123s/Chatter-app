@@ -2,35 +2,21 @@ import React, { useEffect, useState } from "react";
 import { CiVideoOn } from "react-icons/ci";
 import { IoCallOutline } from "react-icons/io5";
 import { IoSearchSharp } from "react-icons/io5";
+import { GrView } from "react-icons/gr";
 import "./chatbox.css";
-import axios from "axios";
+import UserViewDetails from "./modal/UserViewDetails";
 
 
 export const ChatHeader = ({currentUser}) => { 
-  const [data, setData] = useState([]);
+  const [UserViewDetailsModal, setUserViewDetailsModal] = useState(false);
   const [loading, setLoading] = useState(false);
-// useEffect(() => {
-//   const fetchData = async () => {
-//     try {
-//       const getData = await axios.get("http://localhost:5000/api/getUser/66f26695c44e662f145666ac");
-
-//       setData(getData.data.user);
-//     } catch (error) {
-//       console.log(error)
-//       setLoading(true);
-//     }
-//   };
-//   fetchData();
-//   return () => {};
-// }, []);
-
 if (loading) return <div className="contacts-container">Loading...</div>; 
   return (
     <div className="chat-header-container">
       <div className="chat-avatar-name">
-        <img src={currentUser.avatar} />
+        <img src={currentUser?.messageUser?.avatar || currentUser?.groupAvatar} />
         <div className="header-name">
-          <p>{currentUser.username}</p>
+          <p>{currentUser?.messageUser?.username || currentUser?.name}</p>
           <span>Online</span>
         </div>
       </div>
@@ -43,7 +29,8 @@ if (loading) return <div className="contacts-container">Loading...</div>;
             <IoCallOutline size={"28px"} />
           </div>
         </div>
-        <IoSearchSharp  size={'30px'} />
+      { UserViewDetailsModal && <UserViewDetails currentUser={currentUser} closeModal={()=> setUserViewDetailsModal(false)}/> }  
+        <GrView  size={'30px'}   onClick={ ()=>setUserViewDetailsModal(true)}/>
       </div>
     </div>
   );
