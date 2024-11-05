@@ -245,7 +245,7 @@ exports.getAllConversation = async(req,res) =>
             groupAvatar: {
               $cond: {
                 if: { $eq: ["$groupChat", true] },
-                then: "https://cdn.iconscout.com/icon/free/png-512/free-group-icon-download-in-svg-png-gif-file-formats--team-communication-compney-employee-font-awesome-pack-user-interface-icons-46244.png?f=webp&w=256",
+                then:defaultGroupAvatar ,
                 else: "$$REMOVE"
               }
             }
@@ -434,12 +434,18 @@ exports.removeGroupMembers = async (req,res)=> {
     const {id } = req.params;
     const {members } = req.body ;
 
+    const findIdAdmin = await chatModel.findOne({_id: id,creator:req.user._id});
+    
+    if(!findIdAdmin){
+      return res.status(400).send({message:"Not an Admin."})
+    }
+
     const findId = await chatModel.findByIdAndUpdate(
       id,                             
       { $pull: { members: members } },  
       { new: true }                   
     );
-     res.status(200).send({message:"Member Removed to the group.",data:findId});
+     return res.status(200).send({message:"Member Removed to the group.",data:findId});
     
   } catch (error) {
     console.log(error);
