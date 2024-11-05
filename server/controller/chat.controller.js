@@ -395,6 +395,16 @@ exports.getPersonChats = async (req, res) => {
     res.status(500).send({ message: "Internal in getPersonChats server error" });
   }
 };
+
+exports.getSingleChat = async (req, res) =>{
+  try {
+    const id = req.params ;
+    const getSingleChats = await chatModel.findById({_id:id});
+    res.status(200).send({ data: getChats });
+  } catch (error) {
+    console.log(error)
+  }
+}
 exports.editGroupName = async (req,res) =>{
   try {
     const { id} = req.params;
