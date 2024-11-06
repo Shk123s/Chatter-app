@@ -221,6 +221,7 @@ exports.getAllConversation = async(req,res) =>
                 $project: {
                   username: 1,
                   avatar: 1,
+                  bio:1,
                   createdAt: 1
                 }
               }
@@ -265,6 +266,7 @@ exports.getAllConversation = async(req,res) =>
                 $project: {
                   _id: 1,
                   username: 1,
+                  bio:1,
                   avatar: 1
                 }
               }

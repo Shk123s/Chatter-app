@@ -1,4 +1,4 @@
-const {addMessage} = require("../controller/message.controller");
+const {addMessage, getSingleMessages} = require("../controller/message.controller");
 const {addUser, getUser, getUserById} = require("../controller/user.controller");
 const { createGroup, editGroupName, getPersonChats, getAllChats,
     getSingleChat, accessChat, addGroupMembers, removeGroupMembers, getAllConversation} = require("../controller/chat.controller");
@@ -6,7 +6,8 @@ const {login,logOut} = require("../controller/user.controller");
 const { isAuthenticated } = require("../midleware/auth");
 const router = require("express").Router();
 //message 
-router.post("/addMessage",addMessage);
+router.post("/addMessage",isAuthenticated,addMessage);
+router.get("/getSingleMessages/:id",isAuthenticated,getSingleMessages);
 //chat 
 router.post("/addchat",isAuthenticated,accessChat);
 router.post("/createGroup",isAuthenticated,createGroup);

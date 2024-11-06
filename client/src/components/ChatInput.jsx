@@ -1,7 +1,10 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useRef, useEffect, useContext } from "react";
 import { IoMdSend } from "react-icons/io";
 import "./chatinput.css";
 import { io } from "socket.io-client";
+import axios from 'axios';
+import MyContext from "./context/MyContext";
+import { toast } from "react-toastify";
 
 const ChatInput = ({ messageAll, setMessageAll}) => {
   const userId=123, otherUserId = 321; 
@@ -17,16 +20,43 @@ const ChatInput = ({ messageAll, setMessageAll}) => {
   const [socketID, setSocketId] = useState("");
   const socketIDRef = useRef(""); 
   const [room, setRoom] = useState("");
+  const { user } = useContext(MyContext);
+  
+  const getMessages = async () => {
+    try {
+      const getMessages = await axios.get("http://localhost:8000/api/addMessage",{
+        withCredentials:true
+      });
+    } catch (error) {
+      console.log(error);
+      toast.warn("An Error Occured Please try again.", { position: "bottom-left" });
+    }
+  }
 
-  const handleSubmit = (e) => {
+  console.log(user,"userrrrrrr");
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.current.value || !room) return; 
 
-    socket.emit("message", {
-      room,
-      message: message.current.value,
-    });
-
+    // socket.emit("message", {
+    //   room,
+    //   message: message.current.value,
+    // });
+  try {
+    const sendMessage = await axios.post('http://localhost:8000/api/addMessage',
+      {
+         "message":message.current.value,
+         "messageType":"text",
+         "chatId":user._id
+      },{ withCredentials:true}
+      );
+     
+     console.log(sendMessage);
+    
+  } catch (error) {
+    console.log(error);
+    toast.warn("An Error Occured Please try again.", { position: "bottom-left" });
+  }
     setMessageAll((prev) => ({
       ...prev,
       messages: [
@@ -66,11 +96,15 @@ const ChatInput = ({ messageAll, setMessageAll}) => {
 
     const roomId = [userId, otherUserId].sort().join("-");
     setRoom(roomId);
-
+    
     return () => {
       socket.disconnect();
     };
   }, [userId, otherUserId, socket]); 
+  
+  useEffect(()=>{
+    getMessages();
+  },[message]);
 
   return (
     <>

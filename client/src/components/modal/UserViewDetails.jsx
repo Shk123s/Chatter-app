@@ -7,13 +7,13 @@ import { toast } from 'react-toastify';
 
 const UserViewDetails = ({ currentUser, closeModal }) => {
   const [members, setMembers] = useState(currentUser?.memberDetails || []);
-
+  console.log(currentUser)
   const fetchData = async () => {
     try {
       const getData = await axios.get("http://localhost:8000/api/getConversation", {
         withCredentials: true,
       });
-      console.log(getData.data.message, "fetched member data");
+    
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to load member details.", { position: "bottom-left" });
@@ -33,7 +33,7 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
         setMembers(prevMembers => prevMembers.filter(member => member._id !== contact._id));
         fetchData();
         closeModal();
-        window.location.reload();  // Refreshes the page after closing the modal
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error removing member:", error);
@@ -46,37 +46,45 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
 
   return (
     <div className='modal'>
-      <div className="modal-content">
-        <FaRegWindowClose
-          type="button"
-          size={"35px"}
-          onClick={() => {
-            closeModal();
-            window.location.reload();
-          }}
-          style={{ cursor: 'pointer', borderRadius: "5px" }}
-        />
-
-        {members.length > 0 ? (
-          members.map((contact) => (
-            <div key={contact._id} style={{ marginLeft: '45px', display: "flex", alignItems: 'center', gap: "5px" }}>
-              <UserCard
-                username={contact.username}
-                avatar={contact.avatar}
-                message={contact.bio}
-              />
-              <IoIosRemoveCircleOutline
-                size={"35px"}
-                onClick={() => handleRemoveMember(contact)}
-                style={{ color: 'green', cursor: 'pointer' }}
-              />
-            </div>
-          ))
-        ) : (
-          <p>No member details available.</p>
-        )}
-      </div>
-    </div>
+  <div className="modal-content">
+    <FaRegWindowClose
+      type="button"
+      size={"35px"}
+      onClick={() => {
+        closeModal();
+        window.location.reload();
+      }}
+      style={{ cursor: 'pointer', borderRadius: "5px" }}
+    />
+    {
+      currentUser.groupChat === false ? (
+      <UserCard  style={{ marginLeft: '25px', display: "flex", alignItems: 'center',}}
+        username={currentUser?.memberDetails[0].username}
+        avatar={currentUser?.memberDetails[0].avatar}
+        message={currentUser?.memberDetails[0].bio}
+      />
+    ) : (
+      members.length > 0 ? (
+        members.map((contact) => (
+          <div key={contact._id} style={{ marginLeft: '45px', display: "flex", alignItems: 'center', gap: "5px" }}>
+            <UserCard
+              username={contact.username}
+              avatar={contact.avatar}
+              message={contact.bio}
+            />
+            <IoIosRemoveCircleOutline
+              size={"35px"}
+              onClick={() => handleRemoveMember(contact)}
+              style={{ color: 'green', cursor: 'pointer' }}
+            />
+          </div>
+        ))
+      ) : (
+        <p>No member details available.</p>
+      )
+    )}
+  </div>
+</div>
   );
 };
 
