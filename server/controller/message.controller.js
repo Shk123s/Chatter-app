@@ -67,9 +67,22 @@ exports.getSingleMessages = async (req,res) => {
           $match:{
             chatId:new ObjectId(Id)
           }
+        },  {
+          $lookup: {
+            from: "chats",
+            localField: "chatId",
+            foreignField: "_id",
+            as: "result"
+          }
+        },
+        {
+          $addFields: {
+            result: {$arrayElemAt:['$result',0]}
+          }
         }
       ]
       const showMessage = await messageModel.aggregate(singleMessagePipeline);
+
       res.status(200).send({ message: "Message get successfully.", data:showMessage});
   } catch (error) {
     res.status(500).send({ message: "Internal server error" });

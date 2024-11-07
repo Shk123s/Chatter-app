@@ -1,13 +1,12 @@
-import React, { useMemo, useState, useRef, useEffect, useContext } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import { IoMdSend } from "react-icons/io";
 import "./chatinput.css";
 import { io } from "socket.io-client";
 import axios from 'axios';
-import MyContext from "./context/MyContext";
 import { toast } from "react-toastify";
 
-const ChatInput = ({ messageAll, setMessageAll}) => {
-  const userId=123, otherUserId = 321; 
+const ChatInput = ({ messageAll, setMessageAll, userView }) => {
+  const userId = 123, otherUserId = 321;
   const socket = useMemo(
     () =>
       io("http://localhost:8000", {
@@ -18,65 +17,68 @@ const ChatInput = ({ messageAll, setMessageAll}) => {
 
   const message = useRef();
   const [socketID, setSocketId] = useState("");
-  const socketIDRef = useRef(""); 
+  const socketIDRef = useRef("");
   const [room, setRoom] = useState("");
-  const { user } = useContext(MyContext);
-  
-  const getMessages = async () => {
-    try {
-      const getMessages = await axios.get("http://localhost:8000/api/addMessage",{
-        withCredentials:true
-      });
-    } catch (error) {
-      console.log(error);
-      toast.warn("An Error Occured Please try again.", { position: "bottom-left" });
-    }
-  }
 
-  console.log(user,"userrrrrrr");
+  useEffect(() => {
+    if (!userView?._id) return;
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/getSingleMessages/${userView._id}`,
+          { withCredentials: true }
+        );
+        console.log(response.data.data)
+        setMessageAll((prev) => ({
+          ...prev,
+          messages: Array.isArray(response.data) ? response.data.data : [], // Ensure it's an array
+        }));
+      } catch (error) {
+        console.error(error);
+        toast.warn("An Error Occurred. Please try again.", { position: "bottom-left" });
+      }
+    };
+    fetchData();
+  }, [userView, setMessageAll]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!message.current.value || !room) return; 
+    if (!message.current.value || !room) return;
 
-    // socket.emit("message", {
-    //   room,
-    //   message: message.current.value,
-    // });
-  try {
-    const sendMessage = await axios.post('http://localhost:8000/api/addMessage',
-      {
-         "message":message.current.value,
-         "messageType":"text",
-         "chatId":user._id
-      },{ withCredentials:true}
-      );
-     
-     console.log(sendMessage);
-    
-  } catch (error) {
-    console.log(error);
-    toast.warn("An Error Occured Please try again.", { position: "bottom-left" });
-  }
-    setMessageAll((prev) => ({
-      ...prev,
-      messages: [
-        ...(prev.messages || []),
+    try {
+      await axios.post(
+        'http://localhost:8000/api/addMessage',
         {
-          key: socketIDRef.current, 
-          message: message.current.value,
-          recipient: "sender",
+          "message": message.current.value,
+          "messageType": "text",
+          "chatId": userView._id
         },
-      ],
-    }));
+        { withCredentials: true }
+      );
 
-    message.current.value = ""; 
+      setMessageAll((prev) => ({
+        ...prev,
+        messages: [
+          ...(prev.messages || []),
+          {
+            key: socketIDRef.current,
+            message: message.current.value,
+            recipient: "sender",
+          },
+        ],
+      }));
+    } catch (error) {
+      console.log(error);
+      toast.warn("An Error Occurred. Please try again.", { position: "bottom-left" });
+    }
+
+    message.current.value = "";
   };
 
   useEffect(() => {
     socket.on("connect", () => {
-      setSocketId(socket.id); 
-      socketIDRef.current = socket.id; 
-
+      setSocketId(socket.id);
+      socketIDRef.current = socket.id;
       socket.emit("join-room", { userId, otherUserId });
     });
 
@@ -86,7 +88,7 @@ const ChatInput = ({ messageAll, setMessageAll}) => {
         messages: [
           ...(prev.messages || []),
           {
-            key: socketIDRef.current, 
+            key: socketIDRef.current,
             message: data,
             recipient: "receiver",
           },
@@ -96,15 +98,11 @@ const ChatInput = ({ messageAll, setMessageAll}) => {
 
     const roomId = [userId, otherUserId].sort().join("-");
     setRoom(roomId);
-    
+
     return () => {
       socket.disconnect();
     };
-  }, [userId, otherUserId, socket]); 
-  
-  useEffect(()=>{
-    getMessages();
-  },[message]);
+  }, [userId, otherUserId, socket]);
 
   return (
     <>

@@ -10,19 +10,11 @@ export const Messages = ({ messageAll }) => {
   }, [messageAll]);
   return (
     <div className="main-message-container">
+      {console.log(messageAll.messages)}
       {messageAll.messages?.map((item) => (
-        <>
-          {item.recipient === "receiver" && (
-            <div ref={scrollRef} key={crypto.randomUUID()}>
-              <div className="message">
-                <p className="message recieved">
-                  <div className="content">{item.message}</div>
-                </p>
-              </div>
-            </div>
-          )
-          }
-          {
+       
+        <> 
+        {  
             item.recipient === 'sender' && (
             <div ref={scrollRef} key={crypto.randomUUID()}>
               <div className="message">
@@ -33,6 +25,17 @@ export const Messages = ({ messageAll }) => {
             </div>
             )
           }
+          {(
+            <div ref={scrollRef} key={crypto.randomUUID()}>
+              <div className="message">
+                <p className="message recieved">
+                  <div className="content">{item.message}</div>
+                </p>
+              </div>
+            </div>
+          )
+          }
+          
           
         </>
       ))}

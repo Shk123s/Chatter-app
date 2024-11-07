@@ -7,7 +7,7 @@ const { isAuthenticated } = require("../midleware/auth");
 const router = require("express").Router();
 //message 
 router.post("/addMessage",isAuthenticated,addMessage);
-router.post("/getSingleMessages/:id",isAuthenticated,getSingleMessages);
+router.get("/getSingleMessages/:id",isAuthenticated,getSingleMessages);
 //chat 
 router.post("/addchat",isAuthenticated,accessChat);
 router.post("/createGroup",isAuthenticated,createGroup);

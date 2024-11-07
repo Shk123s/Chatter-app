@@ -26,7 +26,7 @@ const Chatbox = ({ userView }) => {
                     <>   
                      <ChatHeader currentUser={userView} />
                       <Messages messageAll={messageAll} />
-                      <ChatInput messageAll={messageAll} setMessageAll={setMessageAll} /> </>
+                      <ChatInput messageAll={messageAll} setMessageAll={setMessageAll} userView={userView} /> </>
                    
                 )
             )}
