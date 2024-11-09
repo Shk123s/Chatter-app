@@ -8,6 +8,7 @@ export const Messages = ({ messageAll }) => {
   }, []);
   useEffect(() => {
   }, [messageAll]);
+  console.log(messageAll,"messssss")
   return (
     <div className="main-message-container">
       {console.log(messageAll.messages)}

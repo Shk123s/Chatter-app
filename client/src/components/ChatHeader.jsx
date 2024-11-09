@@ -10,14 +10,14 @@ import UserViewDetails from "./modal/UserViewDetails";
 export const ChatHeader = ({currentUser}) => { 
   const [UserViewDetailsModal, setUserViewDetailsModal] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  console.log(currentUser)
 if (loading) return <div className="contacts-container">Loading...</div>; 
   return (
     <div className="chat-header-container">
       <div className="chat-avatar-name">
-        <img src={currentUser?.messageUser?.avatar || currentUser?.groupAvatar} />
+        <img src={currentUser?.memberDetails[0]?.avatar || currentUser?.groupAvatar} />
         <div className="header-name">
-          <p>{currentUser?.messageUser?.username || currentUser?.name}</p>
+          <p>{currentUser?.memberDetails[0]?.username || currentUser?.name}</p>
           <span>Online</span>
         </div>
       </div>

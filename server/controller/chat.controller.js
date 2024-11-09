@@ -182,110 +182,126 @@ exports.getAllConversation = async(req,res) =>
     const userId = req.user._id.toString();
     
     const findConversation = await chatModel.aggregate(
-      [
-        {
-          $match: {
+      [  {
+        $match: {
             $or: [
-              {
-                members: { $in: [userId] }
-              },
-              {
-                creator: req.user._id
-              }
+                { members: { $in: [userId] } },
+                { creator: req.user._id }
             ],
             isDeleted: false,
             isActive: true
-          }
-        },
-        {
-          $addFields: {
+        }
+    },
+    {
+        $addFields: {
             firstMember: { $arrayElemAt: ["$members", 0] }
-          }
-        },
-        {
-          $addFields: {
+        }
+    },
+    {
+        $addFields: {
             firstMemberId: { $toObjectId: "$firstMember" }
-          }
-        },
-        {
-          $lookup: {
+        }
+    },
+    {
+        $lookup: {
             from: "users",
-            let: { memberId: "$firstMemberId" },
+            let: { memberId: "$creator" },
             pipeline: [
-              {
-                $match: {
-                  $expr: { $eq: ["$_id", "$$memberId"] }
+                {
+                    $match: {
+                        $expr: { $eq: ["$_id", "$$memberId"] }
+                    }
+                },
+                {
+                    $project: {
+                        username: 1,
+                        avatar: 1,
+                        bio: 1,
+                        createdAt: 1
+                    }
                 }
-              },
-              {
-                $project: {
-                  username: 1,
-                  avatar: 1,
-                  bio:1,
-                  createdAt: 1
-                }
-              }
             ],
             as: "messageUser"
-          }
-        },
-        {
-          $addFields: {
+        }
+    },
+    {
+        $addFields: {
             messageUser: { $arrayElemAt: ["$messageUser", 0] }
-          }
-        },
-        {
-          $addFields: {
+        }
+    },
+    {
+        $addFields: {
             messageUser: {
-              $cond: {
-                if: { $eq: ["$groupChat", true] },
-                then: "$$REMOVE",
-                else: "$messageUser"
-              }
+                $cond: {
+                    if: { $eq: ["$groupChat", true] },
+                    then: "$$REMOVE",
+                    else: "$messageUser"
+                }
             },
             groupAvatar: {
-              $cond: {
-                if: { $eq: ["$groupChat", true] },
-                then:defaultGroupAvatar ,
-                else: "$$REMOVE"
-              }
+                $cond: {
+                    if: { $eq: ["$groupChat", true] },
+                    then:"icon",
+                    else:"$$REMOVE"
+                }
             }
-          }
-        },
-        { 
-          $lookup: {
+        }
+    },
+    { 
+        $lookup: {
             from: "users",
             let: { memberIds: "$members" },
             pipeline: [
-              {
-                $match: {
-                  $expr: { $in: ["$_id", { $map: { input: "$$memberIds", as: "memberId", in: { $toObjectId: "$$memberId" } } }] }
+                {
+                    $match: {
+                        $expr: { 
+                            $in: ["$_id", { 
+                                $map: { input: "$$memberIds", as: "memberId", in: { $toObjectId: "$$memberId" } } 
+                            }] 
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        username: 1,
+                        bio: 1,
+                        avatar: 1
+                    }
                 }
-              },
-              {
-                $project: {
-                  _id: 1,
-                  username: 1,
-                  bio:1,
-                  avatar: 1
-                }
-              }
             ],
             as: "memberDetails"
-          }
-        },
-        {
-          $project: {
-            groupChat: 1,
-            name: 1,
-            members: 1,
-            memberDetails:1,
-            messageUser: 1,
-            groupAvatar: 1,
-            memberDetails: 1
-          }
         }
-      ]
+    },
+    {
+        $addFields:{
+            currentUserId : req.user._id
+        }
+    },
+    {
+        $addFields:{
+            messagesForUser:{
+                $cond:{
+                    if:{ $eq:["$currentUserId","$creator"]},
+                    then:"sent",
+                    else:"received"
+                }
+            }
+        }
+    },
+
+    // Final projection to include necessary fields
+    {
+        $project:{
+            groupChat : 1,
+            name : 1,
+            members : 1,
+            memberDetails : 1,
+            messageUser : 1,
+            groupAvatar : 1,
+            messagesForUser : 1 // Include this field to indicate message direction
+        }
+    }]
       
     );
     
