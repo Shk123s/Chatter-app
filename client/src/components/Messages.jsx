@@ -11,7 +11,7 @@ export const Messages = ({ messageAll }) => {
   console.log(messageAll,"messssss")
   return (
     <div className="main-message-container">
-      {console.log(messageAll.messages)}
+      {/* {console.log(messageAll.messages)} */}
       {messageAll.messages?.map((item) => (
        
         <> 

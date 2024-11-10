@@ -7,17 +7,17 @@ import "./chatbox.css";
 import UserViewDetails from "./modal/UserViewDetails";
 
 
-export const ChatHeader = ({currentUser}) => { 
+export const ChatHeader = ({displayUser}) => { 
   const [UserViewDetailsModal, setUserViewDetailsModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log(currentUser)
+  console.log(displayUser)
 if (loading) return <div className="contacts-container">Loading...</div>; 
   return (
     <div className="chat-header-container">
       <div className="chat-avatar-name">
-        <img src={currentUser?.memberDetails[0]?.avatar || currentUser?.groupAvatar} />
+        <img src={displayUser?.avatar || displayUser?.groupAvatar} />
         <div className="header-name">
-          <p>{currentUser?.memberDetails[0]?.username || currentUser?.name}</p>
+          <p>{displayUser?.username || displayUser?.name}</p>
           <span>Online</span>
         </div>
       </div>

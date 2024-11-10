@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 const MyContext = createContext();
 
 const MyContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState([]);
 
   useEffect(() => {
     const token = Cookies.get('token'); 

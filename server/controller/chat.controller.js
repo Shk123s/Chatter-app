@@ -182,126 +182,146 @@ exports.getAllConversation = async(req,res) =>
     const userId = req.user._id.toString();
     
     const findConversation = await chatModel.aggregate(
-      [  {
-        $match: {
-            $or: [
-                { members: { $in: [userId] } },
-                { creator: req.user._id }
-            ],
-            isDeleted: false,
-            isActive: true
-        }
-    },
-    {
-        $addFields: {
-            firstMember: { $arrayElemAt: ["$members", 0] }
-        }
-    },
-    {
-        $addFields: {
-            firstMemberId: { $toObjectId: "$firstMember" }
-        }
-    },
-    {
-        $lookup: {
-            from: "users",
-            let: { memberId: "$creator" },
-            pipeline: [
-                {
-                    $match: {
-                        $expr: { $eq: ["$_id", "$$memberId"] }
-                    }
-                },
-                {
-                    $project: {
-                        username: 1,
-                        avatar: 1,
-                        bio: 1,
-                        createdAt: 1
-                    }
-                }
-            ],
-            as: "messageUser"
-        }
-    },
-    {
-        $addFields: {
-            messageUser: { $arrayElemAt: ["$messageUser", 0] }
-        }
-    },
-    {
-        $addFields: {
-            messageUser: {
-                $cond: {
-                    if: { $eq: ["$groupChat", true] },
-                    then: "$$REMOVE",
-                    else: "$messageUser"
-                }
-            },
-            groupAvatar: {
-                $cond: {
-                    if: { $eq: ["$groupChat", true] },
-                    then:"icon",
-                    else:"$$REMOVE"
-                }
+      [
+        {
+            $match: {
+                $or: [
+                    { members: { $in: [userId] } },
+                    { creator: req.user._id }
+                ],
+                isDeleted: false,
+                isActive: true
             }
-        }
-    },
-    { 
-        $lookup: {
-            from: "users",
-            let: { memberIds: "$members" },
-            pipeline: [
-                {
-                    $match: {
-                        $expr: { 
-                            $in: ["$_id", { 
-                                $map: { input: "$$memberIds", as: "memberId", in: { $toObjectId: "$$memberId" } } 
-                            }] 
+        },
+        {
+            $addFields: {
+                firstMember: { $arrayElemAt: ["$members", 0] }
+            }
+        },
+        {
+            $addFields: {
+                firstMemberId: { $toObjectId: "$firstMember" }
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                let: { memberId: "$creator" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$_id", "$$memberId"] }
+                        }
+                    },
+                    {
+                        $project: {
+                            username: 1,
+                            avatar: 1,
+                            bio: 1,
+                            createdAt: 1
                         }
                     }
+                ],
+                as: "messageUser"
+            }
+        },
+        {
+            $addFields: {
+                messageUser: { $arrayElemAt: ["$messageUser", 0] }
+            }
+        },
+        {
+            $addFields: {
+                messageUser: {
+                    $cond: {
+                        if: { $eq: ["$groupChat", true] },
+                        then: "$$REMOVE",
+                        else: "$messageUser"
+                    }
                 },
-                {
-                    $project: {
-                        _id: 1,
-                        username: 1,
-                        bio: 1,
-                        avatar: 1
+                groupAvatar: {
+                    $cond: {
+                        if: { $eq: ["$groupChat", true] },
+                        then: defaultGroupAvatar,
+                        else: "$$REMOVE"
                     }
                 }
-            ],
-            as: "memberDetails"
-        }
-    },
-    {
-        $addFields:{
-            currentUserId : req.user._id
-        }
-    },
-    {
-        $addFields:{
-            messagesForUser:{
-                $cond:{
-                    if:{ $eq:["$currentUserId","$creator"]},
-                    then:"sent",
-                    else:"received"
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                let: { memberIds: "$members" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $in: ["$_id", {
+                                    $map: { input: "$$memberIds", as: "memberId", in: { $toObjectId: "$$memberId" } }
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            username: 1,
+                            bio: 1,
+                            avatar: 1
+                        }
+                    }
+                ],
+                as: "memberDetails"
+            }
+        },
+        {
+            $addFields: {
+                currentUserId: userId
+            }
+        },
+        {
+            $addFields: {
+                otherUser: {
+                    $cond: {
+                        if: { $eq: ["$groupChat", false] },
+                        then: {
+                            $arrayElemAt: [
+                                {
+                                    $filter: {
+                                        input: "$memberDetails",
+                                        as: "member",
+                                        cond: { $ne: ["$$member._id", { $toObjectId: "$currentUserId" }] }
+                                    }
+                                },
+                                0
+                            ]
+                        },
+                        else: "$$REMOVE"
+                    }
+                },
+                messagesForUser: {
+                    $cond: {
+                        if: { $eq: ["$currentUserId", "$creator"] },
+                        then: "sent",
+                        else: "received"
+                    }
                 }
             }
+        },
+        {
+            $project: {
+                groupChat: 1,
+                name: 1,
+                members: 1,
+                memberDetails: 1,
+                messageUser: 1,
+                groupAvatar: 1,
+                otherUser: 1,  
+                messagesForUser: 1
+            }
         }
-    },
-
-    // Final projection to include necessary fields
-    {
-        $project:{
-            groupChat : 1,
-            name : 1,
-            members : 1,
-            memberDetails : 1,
-            messageUser : 1,
-            groupAvatar : 1,
-            messagesForUser : 1 // Include this field to indicate message direction
-        }
-    }]
+    ]
+    
       
     );
     
