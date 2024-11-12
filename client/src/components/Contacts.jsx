@@ -76,7 +76,7 @@ const Contacts = ({ setUserView }) => {
           
           
            
-           console.log(isGroupChat,"displayUser")
+           
            console.log(contact,"displayUser")
           return (
             <div onClick={() => handleClick(displayUser)} key={contact?._id}>

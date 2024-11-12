@@ -436,12 +436,37 @@ exports.getPersonChats = async (req, res) => {
 
 exports.getSingleChat = async (req, res) =>{
   try {
-    const id = req.params ;
-    const getSingleChats = await chatModel.findById({_id:id});
-    res.status(200).send({ data: getChats });
+    const id = req.params.id;
+    
+    const getSingleChatWithMembers = await chatModel.aggregate([
+      { $match: { _id: new ObjectId(id) } },
+      {
+        $addFields: {
+          members: {
+            $map: {
+              input: "$members",
+              as: "memberId",
+              in: { $toObjectId: "$$memberId" }
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',           
+          localField: 'members',   
+          foreignField: '_id',     
+          as: 'memberDetails'    
+        }
+      }
+    ]);
+  
+    res.status(200).send({ data: getSingleChatWithMembers });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    res.status(500).send({ error: 'An error occurred while fetching chat details.' });
   }
+  
 }
 exports.editGroupName = async (req,res) =>{
   try {

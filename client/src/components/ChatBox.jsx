@@ -8,6 +8,7 @@ import PlanAddMessage from './PlanAddMessage';
 const Chatbox = ({ userView }) => {
     const [load, setLoader] = useState(false);
     const [messageAll, setMessageAll] = useState([]);
+    console.log(userView,"userView")
     // console.log(userView.hasOwnProperty()) 
     //   console.log(Object.keys(userView).length === 0 ,"chatttttt")
     return (
@@ -17,7 +18,7 @@ const Chatbox = ({ userView }) => {
                     <HashLoader color="#0094ff" size={40} />
                 </div>
             ) : (
-                Object.keys(userView).length === 0 ? (
+                Object?.keys(userView)?.length === 0 ? (
                     <>
                        <PlanAddMessage />
                      

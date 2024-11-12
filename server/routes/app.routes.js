@@ -15,7 +15,7 @@ router.post("/editGroupName/:id",isAuthenticated,editGroupName);
 router.post("/removeGroupMembers/:id",isAuthenticated,removeGroupMembers);
 router.post("/addGroupMembers/:id",isAuthenticated,addGroupMembers);
 router.get("/getChat",isAuthenticated,getPersonChats);
-router.get("/getSingleChat",isAuthenticated,getSingleChat);
+router.get("/getSingleChat/:id",isAuthenticated,getSingleChat);
 router.get("/getAllChat",isAuthenticated,getAllChats);
 router.get("/getConversation",isAuthenticated,getAllConversation);
 
