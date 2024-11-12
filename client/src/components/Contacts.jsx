@@ -12,16 +12,19 @@ import MyContext from "./context/MyContext";
 const Contacts = ({ setUserView }) => {
   const [showModal, setModal] = useState(false);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [showModalGroup, setModalGroup] = useState(false);
   const { user } = useContext(MyContext);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const getData = await axios.get("http://localhost:8000/api/getConversation", {
-          withCredentials: true,
-        });
+        const getData = await axios.get(
+          "http://localhost:8000/api/getConversation",
+          {
+            withCredentials: true,
+          }
+        );
         setData(getData.data.message);
         setLoading(false);
       } catch (error) {
@@ -33,6 +36,7 @@ const Contacts = ({ setUserView }) => {
   }, []);
 
   const handleClick = (displayUser) => {
+    console.log(displayUser ,"displayUser");
     setUserView(displayUser);
   };
 
@@ -47,10 +51,18 @@ const Contacts = ({ setUserView }) => {
     <div className="contacts-container">
       <div className="contact-heading">
         <h1>Chats</h1>
-        <AiOutlineUsergroupAdd size={"30px"} style={{ cursor: "pointer" }} onClick={() => setModal(true)} />
+        <AiOutlineUsergroupAdd
+          size={"30px"}
+          style={{ cursor: "pointer" }}
+          onClick={() => setModal(true)}
+        />
         <span className="createChat">Create Chat</span>
         <div className="groupIconDiv">
-          <div className="create-group-btn" style={{ cursor: "pointer" }} onClick={() => setModalGroup(true)}>
+          <div
+            className="create-group-btn"
+            style={{ cursor: "pointer" }}
+            onClick={() => setModalGroup(true)}
+          >
             <TiGroupOutline size={"30px"} />
           </div>
           <span>Create Group</span>
@@ -62,22 +74,30 @@ const Contacts = ({ setUserView }) => {
       {showModalGroup && <GroupModal closeModal={() => setModalGroup(false)} />}
 
       {data.length === 0 ? (
-        <h3 style={{ marginTop: "20rem", textAlign: "center" }}>Create the chat!</h3>
+        <h3 style={{ marginTop: "20rem", textAlign: "center" }}>
+          Create the chat!
+        </h3>
       ) : (
         data.map((contact) => {
           const isGroupChat = contact.groupChat;
-          
-          let displayUser = 
-          !isGroupChat ?  user?._id == contact.memberDetails[0]._id ?
-          contact.messageUser :contact.memberDetails[0] :
-           
 
-             
-          
-          
-           
-           
-           console.log(contact,"displayUser")
+          const displayUser = isGroupChat
+            ? {
+                username: contact.name,
+                avatar: contact.groupAvatar,
+                bio: "Group Chat",
+                memberDetails: contact.memberDetails,
+                groupChat: true, 
+              }
+            : {
+                ...(
+                  user?._id === contact.memberDetails[0]._id
+                    ? contact.messageUser
+                    : contact.memberDetails[0]
+                ),
+                groupChat: false, 
+              };
+
           return (
             <div onClick={() => handleClick(displayUser)} key={contact?._id}>
               <UserCard

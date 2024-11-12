@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 
 const UserViewDetails = ({ currentUser, closeModal }) => {
   const [members, setMembers] = useState(currentUser?.memberDetails || []);
-  console.log(currentUser)
   const fetchData = async () => {
     try {
       const getData = await axios.get("http://localhost:8000/api/getConversation", {
@@ -57,11 +56,11 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
       style={{ cursor: 'pointer', borderRadius: "5px" }}
     />
     {
-      currentUser.groupChat === false ? (
+      currentUser?.groupChat === false ? (
       <UserCard  style={{ marginLeft: '25px', display: "flex", alignItems: 'center',}}
-        username={currentUser?.memberDetails[0].username}
-        avatar={currentUser?.memberDetails[0].avatar}
-        message={currentUser?.memberDetails[0].bio}
+        username={currentUser?.username}
+        avatar={currentUser?.avatar}
+        message={currentUser?.bio}
       />
     ) : (
       members.length > 0 ? (

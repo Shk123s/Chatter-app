@@ -10,7 +10,6 @@ import UserViewDetails from "./modal/UserViewDetails";
 export const ChatHeader = ({currentUser}) => { 
   const [UserViewDetailsModal, setUserViewDetailsModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log(currentUser)
 if (loading) return <div className="contacts-container">Loading...</div>; 
   return (
     <div className="chat-header-container">

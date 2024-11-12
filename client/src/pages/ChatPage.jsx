@@ -7,11 +7,10 @@ import "./chatpage.css";
 export default function ChatPage() {
   const [data, setData] = useState({});
   const navigate = useNavigate();
-  console.log(data)
   // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   console.log(token)
-  //   if (!token) {
+    //   const token = localStorage.getItem("token");
+    //   console.log(token)
+    //   if (!token) {
   //     navigate('/');
   //   } 
   // }, []);
