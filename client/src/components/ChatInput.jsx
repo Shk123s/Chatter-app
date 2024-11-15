@@ -19,19 +19,20 @@ const ChatInput = ({ messageAll, setMessageAll, userView }) => {
   const [socketID, setSocketId] = useState("");
   const socketIDRef = useRef("");
   const [room, setRoom] = useState("");
-
+  console.log(userView,"userView")
   useEffect(() => {
     if (!userView?._id) return;
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/getSingleMessages/${userView._id}`,
+          `http://localhost:8000/api/getSingleMessages/${userView.chatId}`,
           { withCredentials: true }
         );
-        console.log(response.data.data)
+        console.log(response.data.data ,"get messages ")
         setMessageAll((prev) => ({
           ...prev,
-          messages: Array.isArray(response.data) ? response.data.data : [], // Ensure it's an array
+          messages: Array.isArray(response.data.data) ? response.data.data : [],
+          
         }));
       } catch (error) {
         console.error(error);
@@ -51,7 +52,7 @@ const ChatInput = ({ messageAll, setMessageAll, userView }) => {
         {
           "message": message.current.value,
           "messageType": "text",
-          "chatId": userView._id
+          "chatId": userView.chatId
         },
         { withCredentials: true }
       );
@@ -60,11 +61,11 @@ const ChatInput = ({ messageAll, setMessageAll, userView }) => {
         ...prev,
         messages: [
           ...(prev.messages || []),
-          {
-            key: socketIDRef.current,
-            message: message.current.value,
-            recipient: "sender",
-          },
+          // {
+          //   key: socketIDRef.current,
+          //   message: message.current.value,
+          //   recipient: "sender",
+          // },
         ],
       }));
     } catch (error) {
@@ -83,19 +84,22 @@ const ChatInput = ({ messageAll, setMessageAll, userView }) => {
     });
 
     socket.on("receive-message", (data) => {
-      setMessageAll((prev) => ({
-        ...prev,
-        messages: [
-          ...(prev.messages || []),
-          {
-            key: socketIDRef.current,
-            message: data,
-            recipient: "receiver",
-          },
-        ],
-      }));
+      console.log("Data received:", data);
+      setMessageAll((prev) => {
+        console.log("Previous messages:", prev.messages);
+        return {
+          ...prev,
+          messages: [
+            ...(prev.messages || []),
+            // {
+            //   key: socketIDRef.current,
+            //   message: data,
+            //   recipient: "receiver",
+            // },
+          ],
+        };
+      });
     });
-
     const roomId = [userId, otherUserId].sort().join("-");
     setRoom(roomId);
 

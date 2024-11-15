@@ -49,6 +49,7 @@ const Login = () => {
 
       
         navigate('/chats');
+        window.location.reload();
       }
     } catch (error) {
 

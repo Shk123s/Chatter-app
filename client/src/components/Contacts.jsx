@@ -35,8 +35,9 @@ const Contacts = ({ setUserView }) => {
     fetchData();
   }, []);
 
-  const handleClick = (displayUser) => {
-    console.log(displayUser ,"displayUser");
+  const handleClick = (displayUser,chatId) => {
+    console.log("chatId",chatId,"displayUser",displayUser);
+    displayUser.chatId = chatId;
     setUserView(displayUser);
   };
 
@@ -99,7 +100,7 @@ const Contacts = ({ setUserView }) => {
               };
 
           return (
-            <div onClick={() => handleClick(displayUser)} key={contact?._id}>
+            <div onClick={() => handleClick(displayUser,contact?._id)} key={contact?._id}>
               <UserCard
                 username={displayUser?.username || contact.name}
                 avatar={displayUser?.avatar || contact.groupAvatar}
