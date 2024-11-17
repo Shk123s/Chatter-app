@@ -15,6 +15,7 @@ const Contacts = ({ setUserView }) => {
   const [loading, setLoading] = useState(true);
   const [showModalGroup, setModalGroup] = useState(false);
   const { user } = useContext(MyContext);
+  const [selectedChat, setSelectedChat] = useState(null); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,10 +36,10 @@ const Contacts = ({ setUserView }) => {
     fetchData();
   }, []);
 
-  const handleClick = (displayUser,chatId) => {
-    console.log("chatId",chatId,"displayUser",displayUser);
+  const handleClick = (displayUser, chatId) => {
     displayUser.chatId = chatId;
     setUserView(displayUser);
+    setSelectedChat(chatId); // Set the selected chat
   };
 
   if (loading)
@@ -88,19 +89,23 @@ const Contacts = ({ setUserView }) => {
                 avatar: contact.groupAvatar,
                 bio: "Group Chat",
                 memberDetails: contact.memberDetails,
-                groupChat: true, 
+                groupChat: true,
               }
             : {
-                ...(
-                  user?._id === contact.memberDetails[0]._id
-                    ? contact.messageUser
-                    : contact.memberDetails[0]
-                ),
-                groupChat: false, 
+                ...(user?._id === contact.memberDetails[0]._id
+                  ? contact.messageUser
+                  : contact.memberDetails[0]),
+                groupChat: false,
               };
 
           return (
-            <div onClick={() => handleClick(displayUser,contact?._id)} key={contact?._id}>
+            <div
+              onClick={() => handleClick(displayUser, contact?._id)}
+              key={contact?._id}
+              className={`contact-item ${
+                selectedChat === contact?._id ? "selected" : ""
+              }`} 
+            >
               <UserCard
                 username={displayUser?.username || contact.name}
                 avatar={displayUser?.avatar || contact.groupAvatar}

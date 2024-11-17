@@ -47,28 +47,48 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+const userIdfun = (req) => {
+  return req.user._id;
+}
+
 // Socket.io connection
 io.on("connection", (socket) => {
   console.log("User Connected", socket.id);
 
-  // Listen for users to join a room
-  socket.on("join-room", ({ userId, otherUserId }) => {
-    // Generate a unique room ID based on user IDs
-    const roomId = [userId, otherUserId].sort().join("-");
-    socket.join(roomId);
-    console.log(`User ${userId} joined room ${roomId}`);
+  socket.on("setup", (userData) => {
+    console.log(userData,"userDatauserDatauserData")
+    socket.join(userData.chatId);
+    socket.emit("connected");
+
   });
 
-  // Listen for messages and emit to the room
-  socket.on("message", (data) => {
-    console.log(`Message received in room ${data.room}: ${data.message}`);
-    socket.to(data.room).emit("receive-message", data.message);
+  socket.on("join chat", (room) => {
+    if (!room) {
+        console.log("No chat room provided!");
+        return;
+    }
+    socket.join(room);
+    console.log(`User Joined Room: ${room}`);
+});
+
+
+  socket.on("new message", (newMessageReceived) => {
+    
+  
+    const data = { }; 
+    data.message = newMessageReceived.message
+    data.chatId = newMessageReceived.chatId,
+    data.senderId = newMessageReceived.sender._id ;
+    io.to(newMessageReceived.chatId).emit("message received", data); // Broadcast to room
+   
   });
 
   socket.on("disconnect", () => {
-    console.log("User Disconnected", socket.id);
+      console.log("User Disconnected", socket.id);
   });
 });
+
+
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
