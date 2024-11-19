@@ -506,7 +506,6 @@ exports.removeGroupMembers = async (req,res)=> {
 
     const {id } = req.params;
     const {members } = req.body ;
-
     const findIdAdmin = await chatModel.findOne({_id: id,creator:req.user._id});
     
     if(!findIdAdmin){

@@ -3,6 +3,7 @@ import { FaRegWindowClose } from 'react-icons/fa';
 import UserCard from '../UserCard';
 import { IoIosRemoveCircleOutline } from "react-icons/io";
 import axios from 'axios';
+import { FaRegEdit } from "react-icons/fa";
 import { toast } from 'react-toastify';
 
 const UserViewDetails = ({ currentUser, closeModal }) => {
@@ -21,8 +22,9 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
 
   const handleRemoveMember = async (contact) => {
     try {
+      console.log(currentUser)
       const removeMember = await axios.post(
-        `http://localhost:8000/api/removeGroupMembers/${currentUser._id}`,
+        `http://localhost:8000/api/removeGroupMembers/${currentUser.chatId}`,
         { members: contact._id },
         { withCredentials: true }
       );
@@ -36,9 +38,10 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
       }
     } catch (error) {
       console.error("Error removing member:", error);
-      toast.error("An error occurred while removing the member.", { position: "bottom-left" });
       if (error.response && error.response.status === 400) {
         toast.warn("Not an admin", { position: "bottom-left" });
+      }else{
+        toast.error("An error occurred while removing the member.", { position: "bottom-left" });
       }
     }
   };
@@ -46,6 +49,10 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
   return (
     <div className='modal'>
   <div className="modal-content">
+    <FaRegEdit  size={"35px"} style={{ cursor: 'pointer', borderRadius: "5px",marginRight:"25px",float:"right" }} 
+    /> 
+    <p style={{ marginTop:"10px",marginRight:"10px",float:"right" }}>Group Name </p>
+
     <FaRegWindowClose
       type="button"
       size={"35px"}
