@@ -586,3 +586,12 @@ exports.getAllChats = async (req,res) =>{
     res.status(500).send({ message: "Internal in getAllChats server error" });
   }
 }
+
+exports.leaveMember = async(req,res)=>{
+  try {
+    const memberId = await chatModel.findByIdAndUpdate()
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Internal in leave member server error" });
+  }
+}
