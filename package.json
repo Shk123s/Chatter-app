@@ -6,6 +6,6 @@
     "scripts": {
       "start": "node server/app.js",
       "server": "nodemon backend/server.js",
-      "build": "npm install  && npm install  frontend && npm run build --prefix frontend"
+      "build": "npm install  && npm install  client && npm run build --prefix client"
     }
 }
