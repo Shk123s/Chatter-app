@@ -589,7 +589,25 @@ exports.getAllChats = async (req,res) =>{
 
 exports.leaveMember = async(req,res)=>{
   try {
-    const memberId = await chatModel.findByIdAndUpdate()
+    const { id } = req.params;
+    const {memberId} = req.body;
+   
+
+    const findAdmin = await chatModel.findById(id);
+    
+    if(findAdmin.creator.toString() === memberId) {
+      return res.status(400).send({message:"Admin cannot left the group."});
+
+    }
+
+    const memberRemove = await chatModel.findByIdAndUpdate(
+       id,
+      {$pull:{members:memberId}},
+      {new:true}
+    );
+    
+    res.status(200).send({message:"Member left the group."});
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Internal in leave member server error" });

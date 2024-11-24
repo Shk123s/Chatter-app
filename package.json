@@ -1,0 +1,11 @@
+{
+    "name": "chat-app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+      "start": "node server/app.js",
+      "server": "nodemon backend/server.js",
+      "build": "npm install  && npm install  frontend && npm run build --prefix frontend"
+    }
+}

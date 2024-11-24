@@ -4,12 +4,11 @@ const { Server } = require("socket.io");
 const { createServer } = require("http");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const router = require("./routes/app.routes");
 const bodyParser = require('body-parser');
-const secretKeyJWT = process.env.secretKeyJWT
-const port = process.env.port;
+const path = require('path');
+const port = process.env.PORT;
 
 mongoose
   .connect(process.env.DB_URL)
@@ -43,20 +42,31 @@ app.use(
 
 app.use("/api", router);
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+// deployment
 
-const userIdfun = (req) => {
-  return req.user._id;
+const rootDir = path.resolve(__dirname, "..");
+
+
+if (process.env.NODE_ENV === "production") {
+
+  app.use(express.static(path.join(rootDir , "client", "dist")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(rootDir , "client", "dist", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running..");
+  });
 }
+
 
 // Socket.io connection
 io.on("connection", (socket) => {
   console.log("User Connected", socket.id);
 
   socket.on("setup", (userData) => {
-    console.log(userData,"userDatauserDatauserData")
+
     socket.join(userData.chatId);
     socket.emit("connected");
 
