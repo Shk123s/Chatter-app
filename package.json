@@ -4,8 +4,11 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-      "start": "node server/app.js",
-      "server": "nodemon backend/server.js",
-      "build": "npm install  && npm install  client && npm run build --prefix client"
+        "start": "node server/app.js",
+        "server": "nodemon backend/server.js",
+        "build": "npm install  && npm install  client && npm run build --prefix client"
+    },
+    "devDependencies": {
+        "vite": "^5.4.11"
     }
 }
