@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": " --openssl-legacy-provider start",
-    "build": " --openssl-legacy-provider build",
+    "start": "start",
+    "build": "build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
