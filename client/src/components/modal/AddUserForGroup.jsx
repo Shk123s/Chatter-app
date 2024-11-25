@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { IoAddCircleOutline } from "react-icons/io5";
 
 import axios from 'axios';
+import { host } from '../../utils/host';
 
 const SearchUser = ({ currentUser,closeModal }) => { 
   const [load, setLoader] = useState(false);
@@ -20,7 +21,7 @@ const SearchUser = ({ currentUser,closeModal }) => {
     setError(null);
 
     try {
-      const response = await axios.get(`http://localhost:8000/api/getUser`, {
+      const response = await axios.get(`${host}/api/getUser`, {
         withCredentials: true,
         params: { user: query }
       });
@@ -42,7 +43,7 @@ const SearchUser = ({ currentUser,closeModal }) => {
   };
   const handleClick = async (contact) => {
     try {
-      const response = await axios.post(`http://localhost:8000/api/addGroupMembers/${currentUser.chatId}`, {
+      const response = await axios.post(`${host}/api/addGroupMembers/${currentUser.chatId}`, {
         members: contact._id,
       }, {
         withCredentials: true,

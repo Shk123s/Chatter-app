@@ -6,6 +6,7 @@ import { IoIosRemoveCircleOutline } from "react-icons/io";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import SearchUser from './AddUserForGroup';
+import { host } from '../../utils/host';
 
 const UserViewDetails = ({ currentUser, closeModal }) => {
   const [members, setMembers] = useState(currentUser?.memberDetails || []);
@@ -16,7 +17,7 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
   const handleEditGroupName = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/editGroupName/${currentUser.chatId}`,
+        `${host}/api/editGroupName/${currentUser.chatId}`,
         { name: newGroupName },
         { withCredentials: true }
       );
@@ -35,7 +36,7 @@ const UserViewDetails = ({ currentUser, closeModal }) => {
   const handleRemoveMember = async (contact) => {
     try {
       const removeMember = await axios.post(
-        `http://localhost:8000/api/removeGroupMembers/${currentUser.chatId}`,
+        `${host}/api/removeGroupMembers/${currentUser.chatId}`,
         { members: contact._id },
         { withCredentials: true }
       );

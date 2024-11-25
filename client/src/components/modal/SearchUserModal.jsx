@@ -7,6 +7,7 @@ import { HashLoader } from 'react-spinners';
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 import axios from 'axios';
+import { host } from '../../utils/host';
 
 const SearchUser = ({ closeModal }) => { 
   const [load, setLoader] = useState(false);
@@ -18,7 +19,7 @@ const SearchUser = ({ closeModal }) => {
     setError(null);
 
     try {
-      const response = await axios.get(`http://localhost:8000/api/getUser`, {
+      const response = await axios.get(`${host}/api/getUser`, {
         withCredentials: true,
         params: { user: query }
       });
@@ -41,7 +42,7 @@ const SearchUser = ({ closeModal }) => {
 
   const handleClick = async (contact) => {
     try {
-      const response = await axios.post(`http://localhost:8000/api/addChat`, {
+      const response = await axios.post(`${host}/api/addChat`, {
         userId: contact._id,
       }, {
         withCredentials: true,

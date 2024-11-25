@@ -9,6 +9,7 @@ import UserViewDetails from "./modal/UserViewDetails";
 import axios from "axios";
 import { toast } from "react-toastify";
 import MyContext from "./context/MyContext";
+import { host } from "../utils/host";
 
 export const ChatHeader = ({currentUser}) => { 
   const [UserViewDetailsModal, setUserViewDetailsModal] = useState(false);
@@ -19,7 +20,7 @@ if (loading) return <div className="contacts-container">Loading...</div>;
  const leaveGroup = async () => {
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/leavegroup/${currentUser.chatId}`,
+      `${host}/api/leavegroup/${currentUser.chatId}`,
       {memberId:user._id},
       {withCredentials:true});
       if (response.status === 200) {

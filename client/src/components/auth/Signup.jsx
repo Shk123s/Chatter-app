@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./signup.css";
+import { host } from '../../utils/host';
 
 const Signup = () => {
   const userNameRef = useRef();
@@ -32,7 +33,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/addUser',
+        `${host}/api/addUser`,
         {
           username: userName,
           password: password,

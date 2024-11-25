@@ -7,6 +7,7 @@ import './sideNavbar.css';
 import MyContext from "./context/MyContext";
 import { HashLoader } from 'react-spinners';
 import Cookies from "js-cookie";
+import { host } from "../utils/host";
 export default function SideNavbar() {
   const [showModal,setModal] = useState(false)
   const [load, setLoader] = useState(false);
@@ -21,7 +22,7 @@ export default function SideNavbar() {
   const handleLogout = async () => {
     setLoader(true); 
     try {
-      const response = await axios.post("http://localhost:8000/api/logout", {}, { withCredentials: true });
+      const response = await axios.post(`${host}/api/logout`, {}, { withCredentials: true });
       if (response.status === 200) {
         Cookies.remove('token');
         Cookies.remove('userDetails');

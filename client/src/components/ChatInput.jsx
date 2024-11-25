@@ -4,11 +4,12 @@ import "./chatinput.css";
 import { io } from "socket.io-client";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { host } from "../utils/host";
 
 const ChatInput = ({ messageAll, setMessageAll, userView }) => {
 
   const socket = useMemo(
-    () => io("http://localhost:8000", { withCredentials: true }),
+    () => io(host, { withCredentials: true }),
     []
   );
   useEffect(() => {
@@ -37,7 +38,7 @@ const ChatInput = ({ messageAll, setMessageAll, userView }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/getSingleMessages/${userView.chatId}`,
+          `${host}/api/getSingleMessages/${userView.chatId}`,
           { withCredentials: true }
         );
     
@@ -61,7 +62,7 @@ const ChatInput = ({ messageAll, setMessageAll, userView }) => {
 
     try {
       const senderIdResponse = await axios.post(
-        "http://localhost:8000/api/addMessage",
+        `${host}/api/addMessage`,
         {
           message: message.current.value.trim(),
           messageType: "text",

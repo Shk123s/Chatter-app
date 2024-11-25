@@ -9,6 +9,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoMdPersonAdd } from "react-icons/io";
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
+import { host } from '../../utils/host';
 
 const GroupModal = ({ closeModal }) => { 
   const [load, setLoader] = useState(false);
@@ -22,7 +23,7 @@ const GroupModal = ({ closeModal }) => {
     setError(null);
 
     try {
-      const response = await axios.get(`http://localhost:8000/api/getUser`, {
+      const response = await axios.get(`${host}/api/getUser`, {
         withCredentials: true,
         params: { user: query }
       });
@@ -59,7 +60,7 @@ const GroupModal = ({ closeModal }) => {
     }
 
     try {
-      const response = await axios.post(`http://localhost:8000/api/createGroup`, {
+      const response = await axios.post(`${host}/api/createGroup`, {
         name: groupName,
         members: members.map((member) => member._id)
       }, {

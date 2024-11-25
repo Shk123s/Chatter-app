@@ -8,6 +8,7 @@ import { TiGroupOutline } from "react-icons/ti";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import GroupModal from "./modal/GroupModal";
 import MyContext from "./context/MyContext";
+import { host } from "../utils/host";
 
 const Contacts = ({ setUserView }) => {
   const [showModal, setModal] = useState(false);
@@ -21,7 +22,7 @@ const Contacts = ({ setUserView }) => {
     const fetchData = async () => {
       try {
         const getData = await axios.get(
-          "http://localhost:8000/api/getConversation",
+          `${host}/api/getConversation`,
           {
             withCredentials: true,
           }
